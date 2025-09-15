@@ -59,6 +59,15 @@ for feature in geojson_data["features"]:
     match = state_medians[state_medians["state_full"] == state_name]
     feature["properties"]["medianincome"] = float(match["medianincome"].iloc[0]) if not match.empty else None
 
+#debug section
+st.subheader("Debugging info")
+
+st.write("State medians sample:")
+st.write(state_medians.head(10))
+
+st.write("GeoJSON state names sample:")
+st.write([f["properties"]["name"] for f in geojson_data["features"]][:10])
+
 # Build folium map
 income_map = folium.Map(location=[37.8, -96], zoom_start=4)
 
@@ -121,3 +130,4 @@ with left_col:
 with right_col:
     st.subheader("Interactive Map")
     st_folium(income_map, width=700, height=500)
+
