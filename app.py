@@ -47,7 +47,14 @@ else:
     income['state_abbrev'] = income['state_full'].map(full_to_abbrev)
 
 # Compute state-level median income
-state_medians = income.groupby("state_full").agg(medianincome=("income-2015", "median")).reset_index()
+# Map abbreviations to full names before grouping
+state_medians = (
+    income
+    .assign(state_full = income["state_abbrev"].map(state_map))  # convert abbrev → full name
+    .groupby("state_full")
+    .agg(medianincome=("income-2015", "median"))
+    .reset_index()
+)
 
 # Load GeoJSON for US states
 geojson_url = "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/us_states.json"
@@ -58,15 +65,6 @@ for feature in geojson_data["features"]:
     state_name = feature["properties"]["name"]
     match = state_medians[state_medians["state_full"] == state_name]
     feature["properties"]["medianincome"] = float(match["medianincome"].iloc[0]) if not match.empty else None
-
-#debug section
-st.subheader("Debugging info")
-
-st.write("State medians sample:")
-st.write(state_medians.head(10))
-
-st.write("GeoJSON state names sample:")
-st.write([f["properties"]["name"] for f in geojson_data["features"]][:10])
 
 # Build folium map
 income_map = folium.Map(location=[37.8, -96], zoom_start=4)
