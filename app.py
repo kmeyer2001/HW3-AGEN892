@@ -88,14 +88,6 @@ folium.GeoJson(
     )
 ).add_to(income_map)
 
-colormap = branca.colormap.LinearColormap(
-    vmin=state_medians["medianincome"].min(),
-    vmax=state_medians["medianincome"].max(),
-    colors=["yellow", "green", "darkgreen"],
-    caption="Median Income 2015 (USD)"
-)
-colormap.add_to(income_map)
-
 # Streamlit layout
 st.markdown("<h1 style='background-color:red; padding:10px;'>US State Median Income Map</h1>", unsafe_allow_html=True)
 
