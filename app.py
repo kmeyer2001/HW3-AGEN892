@@ -14,6 +14,9 @@ income = pd.read_csv(
     dtype={"fips": str},
 )
 
+st.write("First 10 rows of income data:", income.head(10))
+st.write("Unique state values:", income['state'].unique())
+
 # Convert income columns to numeric
 income["income-2015"] = pd.to_numeric(income["income-2015"].astype(str).str.replace(',', ''), errors="coerce")
 income["income-1989a"] = pd.to_numeric(income["income-1989a"].astype(str).str.replace(',', ''), errors="coerce")
