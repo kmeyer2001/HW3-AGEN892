@@ -7,7 +7,6 @@ import branca
 
 # Set wide page layout
 st.set_page_config(layout="wide")
-st.markdown("<h1 style='background-color:white; padding:10px;'>US State Median Income Map</h1>", unsafe_allow_html=True)
 
 # Load income data
 income = pd.read_csv(
