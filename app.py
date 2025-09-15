@@ -97,6 +97,9 @@ folium.GeoJson(
     )
 ).add_to(income_map)
 
+#Debug info
+st.write(state_medians.head(10))
+
 # Streamlit layout
 st.markdown("<h1 style='background-color:red; padding:10px;'>US State Median Income Map</h1>", unsafe_allow_html=True)
 
