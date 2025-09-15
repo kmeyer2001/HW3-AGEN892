@@ -40,8 +40,8 @@ income_map = folium.Map(location=[37.8, -96], zoom_start=4)
 folium.Choropleth(
     geo_data=geojson_data,
     data=state_medians,
-    columns=["state", "medianincome"],
-    key_on="feature.properties.name",
+    columns=["state", "medianincome"],  # 'state' column has full names
+    key_on="feature.properties.name",  # matches GeoJSON property
     fill_color="YlGn",
     fill_opacity=0.7,
     line_opacity=0.2,
@@ -64,8 +64,16 @@ folium.GeoJson(
     )
 ).add_to(income_map)
 
+colormap = branca.colormap.LinearColormap(
+    vmin=state_medians["medianincome"].min(),
+    vmax=state_medians["medianincome"].max(),
+    colors=["yellow", "green", "darkgreen"],
+    caption="Median Income 2015 (USD)"
+)
+colormap.add_to(income_map)
+
 # Streamlit layout
-st.markdown("<h1 style='background-color:white; padding:10px;'>US State Median Income Map</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='background-color:red; padding:10px;'>US State Median Income Map</h1>", unsafe_allow_html=True)
 
 left_col, right_col = st.columns([1, 2])
 
