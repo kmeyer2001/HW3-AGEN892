@@ -23,7 +23,7 @@ income["income-1989a"] = pd.to_numeric(income["income-1989a"].astype(str).str.re
 income["income-1989b"] = pd.to_numeric(income["income-1989b"].astype(str).str.replace(',', ''), errors="coerce")
 income["income-1989"] = income[["income-1989a", "income-1989b"]].mean(axis=1)
 
-# If your CSV uses abbreviations, map to full names
+# Map abbreviations to full names
 state_map = {
     "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
     "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware",
@@ -40,24 +40,20 @@ state_map = {
     "WI": "Wisconsin", "WY": "Wyoming", "DC": "District of Columbia"
 }
 
-# If 'state' is abbreviation, convert to full name
-if income['state'].iloc[0] in state_map:
-    income['state_full'] = income['state'].map(state_map)
-    income['state_abbrev'] = income['state']
-else:
-    income['state_full'] = income['state']
-    full_to_abbrev = {v: k for k, v in state_map.items()}
-    income['state_abbrev'] = income['state_full'].map(full_to_abbrev)
+# Apply mapping
+income["state_full"] = income["state"].map(state_map)
 
-# Compute state-level median income
-# Map abbreviations to full names before grouping
+# Drop rows like "US" that don’t have a mapping
+income = income.dropna(subset=["state_full"])
+
+# Compute medians by full state name
 state_medians = (
-    income
-    .assign(state_full = income["state_abbrev"].map(state_map))  # convert abbrev → full name
-    .groupby("state_full")
+    income.groupby("state_full")
     .agg(medianincome=("income-2015", "median"))
     .reset_index()
 )
+
+st.write("DEBUG - state medians sample:", state_medians.head(10))
 
 # Load GeoJSON for US states
 geojson_url = "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/us_states.json"
