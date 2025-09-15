@@ -15,9 +15,9 @@ income = pd.read_csv(
 )
 
 # Convert income columns to numeric
-income["income-2015"] = pd.to_numeric(income["income-2015"], errors="coerce")
-income["income-1989a"] = pd.to_numeric(income["income-1989a"], errors="coerce")
-income["income-1989b"] = pd.to_numeric(income["income-1989b"], errors="coerce")
+income["income-2015"] = pd.to_numeric(income["income-2015"].astype(str).str.replace(',', ''), errors="coerce")
+income["income-1989a"] = pd.to_numeric(income["income-1989a"].astype(str).str.replace(',', ''), errors="coerce")
+income["income-1989b"] = pd.to_numeric(income["income-1989b"].astype(str).str.replace(',', ''), errors="coerce")
 income["income-1989"] = income[["income-1989a", "income-1989b"]].mean(axis=1)
 
 # If your CSV uses abbreviations, map to full names
@@ -40,8 +40,11 @@ state_map = {
 # If 'state' is abbreviation, convert to full name
 if income['state'].iloc[0] in state_map:
     income['state_full'] = income['state'].map(state_map)
+    income['state_abbrev'] = income['state']
 else:
     income['state_full'] = income['state']
+    full_to_abbrev = {v: k for k, v in state_map.items()}
+    income['state_abbrev'] = income['state_full'].map(full_to_abbrev)
 
 # Compute state-level median income
 state_medians = income.groupby("state_full").agg(medianincome=("income-2015", "median")).reset_index()
@@ -54,7 +57,7 @@ geojson_data = requests.get(geojson_url).json()
 for feature in geojson_data["features"]:
     state_name = feature["properties"]["name"]
     match = state_medians[state_medians["state_full"] == state_name]
-    feature["properties"]["medianincome"] = float(match["medianincome"]) if not match.empty else None
+    feature["properties"]["medianincome"] = float(match["medianincome"].iloc[0]) if not match.empty else None
 
 # Build folium map
 income_map = folium.Map(location=[37.8, -96], zoom_start=4)
