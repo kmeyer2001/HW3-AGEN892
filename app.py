@@ -14,9 +14,6 @@ income = pd.read_csv(
     dtype={"fips": str},
 )
 
-st.write("First 10 rows of income data:", income.head(10))
-st.write("Unique state values:", income['state'].unique())
-
 # Convert income columns to numeric
 income["income-2015"] = pd.to_numeric(income["income-2015"].astype(str).str.replace(',', ''), errors="coerce")
 income["income-1989a"] = pd.to_numeric(income["income-1989a"].astype(str).str.replace(',', ''), errors="coerce")
@@ -52,8 +49,6 @@ state_medians = (
     .agg(medianincome=("income-2015", "median"))
     .reset_index()
 )
-
-st.write("DEBUG - state medians sample:", state_medians.head(10))
 
 # Load GeoJSON for US states
 geojson_url = "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/us_states.json"
